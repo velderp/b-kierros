@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/map.css">
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:200" rel="stylesheet">
 </head>
 <body>
 
@@ -13,6 +14,19 @@
 
     <!-- sivupalkki -->
     <div id="sidebar">
+        <h1>B-KIERROS</h1>
+        <p>Etsi kiinnostavia kohteita lähelläsi!</p>
+        <label for="hakuteksti" id="hakuteksti-label">Syötä sijaintisi:</label><br><input id="hakuteksti"
+                                                                                          type="text"><br>
+        <button id="hakunappi">Hae!</button>
+
+        <!-- pudotusvalikko -->
+        <br>
+        <button type="button" id="suodatusButton">Suodata</button>
+        <ul id="suodattimetContent">
+            <!-- suodattimet -->
+        </ul>
+
         <script src="js/sidebar.js"></script>
     </div>
 
