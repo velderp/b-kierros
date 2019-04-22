@@ -1,0 +1,19 @@
+#sidebar {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 210px;
+    padding: 40px;
+    background-color: darkgray;
+}
+
+#hakuteksti {
+    margin: 5px 0 0 0;
+}
+
+#suodattimetContent {
+    display: none;
+}
+
+#suodatusButton {
+    margin-top: 20px;
+}
