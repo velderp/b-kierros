@@ -2,61 +2,18 @@
     flex-grow: 1;
     flex-basis: 0;
     min-width: 210px;
-    padding: 30px;
-    background-color: var(--main-bg-color);
+    padding: 40px;
+    background-color: darkgray;
 }
 
-h1 {
-    margin: 0 0 2% 0;
+#hakuteksti {
+    margin: 5px 0 0 0;
 }
 
-p {
-    margin: 0;
-}
-
-#inputSearch {
-    margin: 10px 0 0 0;
-    width: 100%;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-    background-color: white;
-    background-image: url('../images/20px-Search_Icon.png');
-    background-position: 10px 12px;
-    background-repeat: no-repeat;
-    padding: 12px 20px 12px 40px;
-}
-
-
-#tagList {
+#suodattimetContent {
     display: none;
-    list-style-type: none;
-    padding: 0;
-    margin-top: 10px;
 }
 
-.sidebar-button {
-    width: 100%;
-    background-color: var(--button-color);
-    border: none;
-    border-radius: 4px;
-    color: white;
-    padding: 5px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-family: 'Source Code Pro', monospace;
-    font-size: 16px;
-}
-.sidebar-button:active {
-    background-color: var(--button-active-color);
-}
-
-#searchButton {
-    margin-top: 3px;
-}
-
-#tagButton {
-    margin-top: 15px;
+#suodatusButton {
+    margin-top: 20px;
 }

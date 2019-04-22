@@ -1,31 +1,26 @@
-const tagButton = document.getElementById('tagButton');
-const tagList = document.getElementById('tagList');
+const suodatusButton = document.getElementById('suodatusButton');
+const suodattimetContent = document.getElementById('suodattimetContent');
 
-tagButton.addEventListener('click', hideTagsToggle);
+suodatusButton.addEventListener('click', suodattimetToggle);
 
-function hideTagsToggle() {
-  if (tagList.style.display === 'block')
-    tagList.style.display = 'none';
+function suodattimetToggle() {
+  if (suodattimetContent.style.display === 'block')
+    suodattimetContent.style.display = 'none';
   else
-    tagList.style.display = 'block';
+    suodattimetContent.style.display = 'block';
 }
 
 function haeSuodattimet() {
   for (let i = 0; i < 5; i++) {
-    const taqlistItem = document.createElement('li');
-    const tagLabel = document.createElement('label');
-    const tagCheckbox = document.createElement('input');
-
-    tagCheckbox.type = 'checkbox';
-    tagCheckbox.name = 'tags';
-    tagCheckbox.id = 'suodatin' + i;
-
-    tagLabel.setAttribute('for', 'suodatin' + i);
-    tagLabel.innerText = 'Suodatin #' + i; // innerTextiin APIlta saatu tieto suodattimista!
-
-    taqlistItem.appendChild(tagCheckbox);
-    taqlistItem.appendChild(tagLabel);
-    tagList.appendChild(taqlistItem);
+    const suodatinListItem = document.createElement('li');
+    const suodatinLabel = document.createElement('label');
+    const suodatinCheckbox = document.createElement('input');
+    suodatinCheckbox.type = 'checkbox';
+    suodatinCheckbox.id = 'suodatin' + i;
+    suodatinLabel.innerText = 'Suodatin #' + i; // innerTextiin APIlta saatu tieto suodattimista!
+    suodatinLabel.appendChild(suodatinCheckbox);
+    suodatinListItem.appendChild(suodatinLabel);
+    suodattimetContent.appendChild(suodatinListItem);
   }
 }
 
