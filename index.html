@@ -18,15 +18,34 @@
     <div id="sidebar">
         <h1>B-KIERROS</h1>
         <p>Etsi kiinnostavia kohteita lähelläsi!</p>
-        <label for="inputSearch" id="inputSearch-label" style="display: none"></label><input id="inputSearch"
-                                                                         type="text" placeholder="Syötä sijaintisi"><br>
+        <label for="inputLocation" id="inputLocation-label" style="display: none"></label>
+        <input id="inputLocation" class="sidebar-input" type="text" placeholder="Syötä sijaintisi"><br>
+
+        <label for="inputLocation" id="inputDestinationi-label" style="display: none"></label>
+        <input id="inputDestination" class="sidebar-input" type="text" placeholder="Syötä määränpää"><br>
+
         <button class="sidebar-button" id="searchButton">Hae!</button>
 
+        <!-- liukusäädin -->
+        <div class="slideContainer">
+            <label for="searchRange" style="display: none"></label>
+            <input type="range" min="1" max="500" value="150" class="slider" id="searchRange">
+            <p style="text-align: right"><span id="sliderValue"></span> m</p>
+        </div>
+        <script>
+          let slider = document.getElementById('searchRange');
+          let output = document.getElementById('sliderValue');
+          output.innerHTML = slider.value;
+
+          slider.oninput = function() {
+            output.innerHTML = this.value;
+          };
+        </script>
+
         <!-- pudotusvalikko -->
-        <br>
         <button class="sidebar-button" type="button" id="tagButton">Suodata</button>
         <ul id="tagList">
-            <!-- suodattimet -->
+            <!-- suodattimet haetaan tähän, katso sidebar.js -->
         </ul>
 
         <script src="js/sidebar.js"></script>
