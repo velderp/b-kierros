@@ -67,7 +67,7 @@ function onMapClick(e) {
 }
 
 
-let address = document.getElementById('inputSearch');
+let address = document.getElementById('inputLocation');
 function addressSearch(address) {
   //console.log(address.value);
   fetch('https://nominatim.openstreetmap.org/search?q=' + address.value + '&format=json&polygon=1&addressdetails=1').
