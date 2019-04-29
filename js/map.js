@@ -68,7 +68,13 @@ function apiRequest(searchString, type) {
         return response.json();
       }).then(function(json) {
     console.log(json);
-    previousResults[type] = json;
+    // Lisätään löydetyt paikat mapiin, jotta reitin varrelta hakiessa vältytään duplikaateilta
+    previousResults[type] = {};
+    for (let i = 0; i < json.data.length; i++) {
+      let places = previousResults[type],
+          key = json.data[i].id;
+      places[key] = json.data[i];
+    }
     // Korvataan edelliset paikkamerkit uusilla
     addPlaceMarkers(type);
   }).catch(function(virhe) {
@@ -78,15 +84,17 @@ function apiRequest(searchString, type) {
 
 function addPlaceMarkers(type) {
   placeMarkers.clearLayers();
-  let length = previousResults[type].data.length;
+  let places = previousResults[type];
   
-  for (let i = 0; i < length; i++) {
-    // Tänne tulee paikkojen suodatus
-    let p = previousResults[type].data[i],
-        lat = p.location.lat,
-        lon = p.location.lon,
-        name = p.name.fi;
-    L.marker([lat, lon]).addTo(placeMarkers).bindPopup(name);
+  for (let key in places) {
+    if (places.hasOwnProperty(key)) {
+      // Tänne tulee paikkojen suodatus
+      let p = places[key],
+          lat = p.location.lat,
+          lon = p.location.lon,
+          name = p.name.fi;
+      L.marker([lat, lon]).addTo(placeMarkers).bindPopup(name);
+    }
   }
 }
 
