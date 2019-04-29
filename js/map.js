@@ -46,13 +46,13 @@ function search() {
   let searchType = 'places',
       radius = slider.value,
       searchString = loc.toString() + ',' + radius / 1000;
-  
+
   if (previousQueries[searchType] === searchString) {
     console.log(searchString);
     addPlaceMarkers(searchType);
   } else {
     previousQueries[searchType] = searchString;
-    
+
     // Korvataan vanha hakualue uudella
     searchCircles.clearLayers();
     L.circle(loc, {
@@ -60,7 +60,7 @@ function search() {
       fillOpacity: .1,
       radius: radius,
     }).addTo(searchCircles);
-    
+
     // Tehdään haku API:sta
     apiRequest(searchString, searchType);
   }
@@ -70,7 +70,7 @@ function apiRequest(searchString, type) {
   let proxyUrl = 'https://cors-anywhere.herokuapp.com/',
       targetUrl = `http://open-api.myhelsinki.fi/v1/${type}/?distance_filter=`,
       request = proxyUrl + targetUrl + searchString;
-  
+
   console.log(request);
   fetch(request).
       then(function(response) {
@@ -94,7 +94,7 @@ function apiRequest(searchString, type) {
 function addPlaceMarkers(type) {
   placeMarkers.clearLayers();
   let places = previousResults[type];
-  
+
   for (let key in places) {
     if (places.hasOwnProperty(key)) {
       // Tänne tulee paikkojen suodatus
@@ -112,25 +112,7 @@ let address = document.getElementById('inputLocation');
 function addressSearch(address) {
   //console.log(address.value);
   fetch('https://nominatim.openstreetmap.org/search?q=' + address.value +
-      '&format=json&addressdetails=1').
-      then(function(response) {
-        return response.json();
-      }).
-      then(function(queryJson) {
-        console.log(queryJson);
-        loc = [queryJson[0].lat, queryJson[0].lon];
-        locMarker.setLatLng(loc);
-      }).
-      catch(function(error) {
-        console.log(error);
-      });
-}
-
-
-let address = document.getElementById('inputLocation');
-function addressSearch(address) {
-  //console.log(address.value);
-  fetch('https://nominatim.openstreetmap.org/search?q=' + address.value + '&format=json&polygon=1&addressdetails=1').
+      '&format=json&polygon=1&addressdetails=1').
       then(function(response) {
         return response.json();
       }).
@@ -156,11 +138,8 @@ let contextHtml = `<div id="setLoc" style="color: dodgerblue">Aseta sijainti</di
                    <div id="setDest" style="color: dodgerblue">Aseta määränpää</div>`,
     contextPopup = L.popup().setContent(contextHtml);
 
-mymap.on('contextmenu',(e) => {
-  contextPopup
-  .setLatLng(e.latlng)
-  .addTo(mymap)
-  .openOn(mymap);
+mymap.on('contextmenu', (e) => {
+  contextPopup.setLatLng(e.latlng).addTo(mymap).openOn(mymap);
   let setLoc = document.getElementById('setLoc');
   setLoc.addEventListener('click', function() {
     loc = [e.latlng.lat, e.latlng.lng];
