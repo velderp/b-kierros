@@ -13,6 +13,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(mymap);
 
 let loc = [60.171, 24.9415],  // Alkusijainti (rautatieasema)
+    dest = [],
     placeMarkers = L.layerGroup().addTo(mymap),
     searchCircles = L.layerGroup().addTo(mymap),
     previousQueries = {}, // Tähän tallennetaan viimeisimmät hakuehdot tyypeittäin
@@ -30,7 +31,15 @@ let loc = [60.171, 24.9415],  // Alkusijainti (rautatieasema)
     }),
     locMarker = L.marker(loc, {  // Sijaintimerkki
       icon: locIcon,
-    }).addTo(mymap);
+    }).addTo(mymap),
+    destIcon = L.icon({  // Määränpäämerkin ikoni
+      iconUrl: 'images/marker-icon-red.png',
+      iconAnchor: [12, 39],
+      popupAnchor: [0, -7],
+    }),
+    destMarker = L.marker(loc, {  // Määränpäämerkki
+      icon: destIcon,
+    });
 locMarker.bindPopup('hmm Terve kaikille jotka tätä channelii kuuntelee! =p');
 
 function search() {
@@ -98,14 +107,6 @@ function addPlaceMarkers(type) {
   }
 }
 
-// Karttaklikkaus
-mymap.on('click', onMapClick);
-
-function onMapClick(e) {
-  loc = [e.latlng.lat, e.latlng.lng]; // Vaihdetaan oma sijainti
-  locMarker.setLatLng(e.latlng); // Siirretään sijaintimerkki
-}
-
 let address = document.getElementById('inputLocation');
 
 function addressSearch(address) {
@@ -129,4 +130,26 @@ function addressSearch(address) {
 let searchButton = document.getElementById('searchButton');
 searchButton.addEventListener('click', function() {
   addressSearch(address);
+});
+
+// Karttaklikkaus
+let contextHtml = `<div id="setLoc" style="color: dodgerblue">Aseta sijainti</div><br>
+                   <div id="setDest" style="color: dodgerblue">Aseta määränpää</div>`,
+    contextPopup = L.popup().setContent(contextHtml);
+
+mymap.on('contextmenu',(e) => {
+  contextPopup
+  .setLatLng(e.latlng)
+  .addTo(mymap)
+  .openOn(mymap);
+  let setLoc = document.getElementById('setLoc');
+  setLoc.addEventListener('click', function() {
+    loc = [e.latlng.lat, e.latlng.lng];
+    locMarker.setLatLng(e.latlng);
+  });
+  let setDest = document.getElementById('setDest');
+  setDest.addEventListener('click', function() {
+    dest = [e.latlng.lat, e.latlng.lng];
+    destMarker.setLatLng(e.latlng).addTo(mymap);
+  });
 });
