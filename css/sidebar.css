@@ -7,7 +7,7 @@ p {
 }
 
 .sidebar-input {
-    margin: 10px 0 0 0;
+    margin-top: 10px;
     width: 100%;
     box-sizing: border-box;
     border: 2px solid #ccc;
@@ -22,10 +22,10 @@ p {
 
 
 #tagList {
+    margin-top: 10px;
     display: none;
     list-style-type: none;
     padding: 0;
-    margin-top: 10px;
 }
 
 .sidebar-button {
@@ -90,4 +90,7 @@ p {
     border-radius: 50%;
     background: var(--button-active-color);
     cursor: pointer;
+}
+
+#sidebarHideButton {
 }
