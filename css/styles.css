@@ -14,6 +14,22 @@ body {
     font-family: 'Source Code Pro', monospace;
 }
 
+#map {
+    flex-grow: 9;
+    flex-basis: 0;
+    min-width: 270px;
+    height: 100%;
+    background-color: var(--map-bg-color);
+}
+
+#sidebar {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 210px;
+    padding: 30px;
+    background-color: var(--main-bg-color);
+}
+
 #content-wrapper {
     position: relative;
     width: 100%;

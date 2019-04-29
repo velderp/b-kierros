@@ -7,7 +7,9 @@ p {
 }
 
 .sidebar-input {
+    margin: 10px 0 0 0;
     margin-top: 10px;
+
     width: 100%;
     box-sizing: border-box;
     border: 2px solid #ccc;
