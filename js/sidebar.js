@@ -1,10 +1,44 @@
+const geolocationButton = document.getElementById('geolocationButton');
+const inputLocation = document.getElementById('inputLocation');
+geolocationButton.addEventListener('click', getCurrentLocation);
+
+function getCurrentLocation() {
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(getPosition, showError);
+  } else {
+    prompt('Selain ei tue paikannusta');
+  }
+
+}
+
+function getPosition(position) {
+  inputLocation.value = position.coords.latitude + ', ' +
+      position.coords.longitude;
+}
+
+function showError(error) {
+  switch (error.code) {
+    case error.PERMISSION_DENIED:
+      alert('Sijaintipalveluiden käyttö estetty.');
+      break;
+    case error.POSITION_UNAVAILABLE:
+      alert('Sijaintitietoja ei saatavilla.');
+      break;
+    case error.TIMEOUT:
+      alert('Sijaintitietojen pyyntö aikakatkaistu.');
+      break;
+    case error.UNKNOWN_ERROR:
+      alert('Tunnistamaton virhe tapahtui.');
+      break;
+  }
+}
+
+// sivupalkin piilotus
+
 const sidebarContent = document.getElementById('sidebar');
 const hideSidebar = document.getElementById('sidebarHideButton');
 hideSidebar.addEventListener('click', hideSidebarToggle);
-
-const tagButton = document.getElementById('tagButton');
-const tagList = document.getElementById('tagList');
-tagButton.addEventListener('click', hideTagsToggle);
 
 function hideSidebarToggle() {
   console.log('sidebarHideButton pressed');
@@ -33,6 +67,12 @@ function hideSidebarToggle() {
 
 }
 
+// tag -listan piilottaminen ja muu käsittely
+
+const tagButton = document.getElementById('tagButton');
+const tagList = document.getElementById('tagList');
+tagButton.addEventListener('click', hideTagsToggle);
+
 function hideTagsToggle() {
 
   if (tagList.style.display === 'block')
@@ -41,7 +81,7 @@ function hideTagsToggle() {
     tagList.style.display = 'block';
 }
 
-function haeSuodattimet() {
+function getTags() {
   for (let i = 0; i < 5; i++) {
     const taqlistItem = document.createElement('li');
     const tagLabel = document.createElement('label');
@@ -60,4 +100,4 @@ function haeSuodattimet() {
   }
 }
 
-haeSuodattimet();
+getTags();

@@ -20,10 +20,14 @@
         <div id="sidebar" style="display:block;">
             <h1>B-KIERROS</h1>
             <p>Etsi kiinnostavia kohteita lähelläsi!</p>
-            <label for="inputLocation" id="inputLocation-label" style="display: none"></label>
-            <input id="inputLocation" class="sidebar-input" type="text" placeholder="Syötä sijaintisi"><br>
 
-            <label for="inputLocation" id="inputDestinationi-label" style="display: none"></label>
+            <div id="currentLocation-wrapper">
+                <label for="inputLocation" id="inputLocation-label" style="display: none"></label>
+                <input id="inputLocation" class="sidebar-input" type="text" placeholder="Syötä sijaintisi">
+                <button id="geolocationButton"></button>
+            </div>
+
+            <label for="inputDestination" id="inputDestination-label" style="display: none"></label>
             <input id="inputDestination" class="sidebar-input" type="text" placeholder="Syötä määränpää"><br>
 
             <button class="sidebar-button" id="searchButton">Hae!</button>
@@ -50,14 +54,10 @@
                 <!-- suodattimet haetaan tähän, katso sidebar.js -->
             </ul>
 
-
         </div>
 
-
-
     </div>
-
-
+    
     <!-- karttanäkymä -->
     <div id="map">
     </div>
