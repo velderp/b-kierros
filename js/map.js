@@ -119,7 +119,7 @@ function addressSearch(address) {
       then(function(queryJson) {
         console.log(queryJson);
         loc = [queryJson[0].lat, queryJson[0].lon];
-        marker.setLatLng(loc);
+        locMarker.setLatLng(loc);
       }).
       catch(function(error) {
         console.log(error);
