@@ -107,32 +107,6 @@ function addPlaceMarkers(type) {
   }
 }
 
-let address = document.getElementById('inputLocation');
-
-function addressSearch(address) {
-  //console.log(address.value);
-  fetch('https://nominatim.openstreetmap.org/search?q=' + address.value +
-      '&format=json&polygon=1&addressdetails=1').
-      then(function(response) {
-        return response.json();
-      }).
-      then(function(queryJson) {
-        console.log(queryJson);
-        loc = [queryJson[0].lat, queryJson[0].lon];
-        locMarker.setLatLng(loc);
-      }).
-      catch(function(error) {
-        console.log(error);
-      });
-
-}
-
-//
-let searchButton = document.getElementById('searchButton');
-searchButton.addEventListener('click', function() {
-  addressSearch(address);
-});
-
 // Karttaklikkaus
 let contextHtml = `<div id="setLoc" style="color: dodgerblue">Aseta sijainti</div><br>
                    <div id="setDest" style="color: dodgerblue">Aseta määränpää</div>`,
