@@ -48,17 +48,20 @@ function search(coords) {
       searchArray = createSearchArray(coords);
   
   if (previousQueries[type] === searchArray.toString()) {
+    // Reitti ei ole muuttunut edellisen haun jälkeen, lisätään vain merkit
     console.log('no request');
     addPlaceMarkers(type);
   } else {
     previousQueries[type] = searchArray.toString();
     previousResults[type] = {};
+    tags[type] = {};
     searchCircles.clearLayers();
-    
+  
+    console.log('Requesting ' + type);
+    console.log(searchArray);
     for (let i = 0; i < searchArray.length; i++) {
-      let latlon = searchArray[i],
-          isLast = (i === searchArray.length - 1);
-      // Korvataan vanha hakualue uudella
+      let latlon = searchArray[i];
+      // Lisätään hakualue kartalle
       L.circle(latlon, {
         color: typeColors[type],
         fillOpacity: .1,
@@ -66,7 +69,7 @@ function search(coords) {
       }).addTo(searchCircles);
       
       // Tehdään haku API:sta
-      apiRequest(latlon, isLast);
+      apiRequest(latlon);
     }
   }
 }
@@ -76,34 +79,32 @@ function createSearchArray(coords) {
       searchArray = [loc],
       prev = L.latLng(loc);
   
+  // Lisätään taulukkoon vähintään hakusäteen välein toisistaan olevat reitin pisteet
   for (let i = 0; i < coords.length; i++) {
     let c = coords[i],
         latlon = L.latLng(c),
         distance = prev.distanceTo(latlon);
     if (distance >= radius) {
       searchArray.push([c.lat, c.lng]);
-      prev = L.latLng(coords[i]);
+      prev = L.latLng(coords[i]); // Edellinen lisätty piste
     }
   }
-  if (coords.length > 1) searchArray.push(dest);
+  if (coords.length > 1) searchArray.push(dest);  // Lisätään asetettu määränpää taulukon loppuun
   return searchArray;
 }
 
-function apiRequest(latlon, isLast) {
+function apiRequest(latlon) {
   let type = 'places',
       radius = slider.value / 1000,
       proxyUrl = 'https://cors-anywhere.herokuapp.com/',
       targetUrl = `http://open-api.myhelsinki.fi/v1/${type}/?distance_filter=`,
       searchString = latlon.toString() + ',' + radius,
       request = proxyUrl + targetUrl + searchString;
-  tags[type] = {};  // Tehdään tämä muualla, kun implementoidaan haku reitin varrelta
   
-  console.log(request);
   fetch(request).
       then(function(response) {
         return response.json();
       }).then(function(json) {
-    console.log(json);
     // Lisätään löydetyt paikat mapiin, jotta reitin varrelta hakiessa vältytään duplikaateilta
     for (let i = 0; i < json.data.length; i++) {
       let places = previousResults[type],
@@ -116,7 +117,7 @@ function apiRequest(latlon, isLast) {
         tags[type][id] = p.tags[i].name;
       }
     }
-    if (isLast) addPlaceMarkers(type);
+    addPlaceMarkers(type);
   }).catch(function(virhe) {
     console.log(virhe);
   });
@@ -148,6 +149,7 @@ function createPopupContent(place, type) {
                  <p>${streetAddr}<br>
                   ${postalCode} ${locality}</p>`;
   
+  // Tyyppikohtaiset sisällöt
   switch (type) {
     case 'places':
       break;

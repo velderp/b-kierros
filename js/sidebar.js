@@ -57,6 +57,7 @@ function currentDestination(address) {
           {
             profile: 'mapbox/walking',
           }),
+      createMarker: function() { return null; },
       show: false,
     });
     route.on('routeselected', function(e) {
