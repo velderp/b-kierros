@@ -16,8 +16,10 @@ let loc = [60.171, 24.9415],  // Alkusijainti (rautatieasema)
     dest = [],
     placeMarkers = L.layerGroup().addTo(mymap),
     searchCircles = L.layerGroup().addTo(mymap),
+    routeGroup = L.layerGroup().addTo(mymap),
     previousQueries = {}, // Tähän tallennetaan viimeisimmät hakuehdot tyypeittäin
     previousResults = {}, // Tähän tallennetaan viimeisimmät hakutulokset tyypeittäin
+    tags = {},
     typeColors = {
       'places': 'blue',
       'events': 'red',
@@ -70,6 +72,7 @@ function apiRequest(searchString, type) {
   let proxyUrl = 'https://cors-anywhere.herokuapp.com/',
       targetUrl = `http://open-api.myhelsinki.fi/v1/${type}/?distance_filter=`,
       request = proxyUrl + targetUrl + searchString;
+  tags[type] = {};  // Tehdään tämä muualla, kun implementoidaan haku reitin varrelta
   
   console.log(request);
   fetch(request).
@@ -81,8 +84,14 @@ function apiRequest(searchString, type) {
     previousResults[type] = {};
     for (let i = 0; i < json.data.length; i++) {
       let places = previousResults[type],
-          key = json.data[i].id;
-      places[key] = json.data[i];
+          p = json.data[i],
+          key = p.id;
+      places[key] = p;
+      // Tallennetaan löydettyjen paikkojen tagit
+      for (let i = 0; i < p.tags.length; i++) {
+        let id = p.tags[i].id;
+        tags[type][id] = p.tags[i].name;
+      }
     }
     // Korvataan edelliset paikkamerkit uusilla
     addPlaceMarkers(type);
@@ -101,10 +110,36 @@ function addPlaceMarkers(type) {
       let p = places[key],
           lat = p.location.lat,
           lon = p.location.lon,
-          name = p.name.fi;
-      L.marker([lat, lon]).addTo(placeMarkers).bindPopup(name);
+          content = createPopupContent(p, type);
+      L.marker([lat, lon]).addTo(placeMarkers).bindPopup(content);
     }
   }
+}
+
+function createPopupContent(place, type) {
+  let address = place.location.address,
+      streetAddr = (address.street_address) ? address.street_address : '',
+      postalCode = (address.postal_code) ? address.postal_code : '',
+      locality = (address.locality) ? address.locality : '',
+      content = `<div id="popup-content" style="">
+                 <h3><a href="${place.info_url}" target="_blank">${place.name.fi}</a></h3>
+                 <p>${streetAddr}<br>
+                  ${postalCode} ${locality}</p>`;
+  
+  switch (type) {
+    case 'places':
+      break;
+      
+    case 'activities':
+      break;
+      
+    case 'events':
+      break;
+  }
+  
+  content += `<p>${place.description.body}</p>`;
+  content += '</div>';
+  return content;
 }
 
 // Karttaklikkaus
