@@ -1,5 +1,6 @@
 const geolocationButton = document.getElementById('geolocationButton');
 const inputLocation = document.getElementById('inputLocation');
+const inputDestination = document.getElementById('inputDestination');
 geolocationButton.addEventListener('click', getCurrentLocation);
 
 function getCurrentLocation() {
@@ -17,7 +18,7 @@ function getPosition(position) {
       position.coords.longitude;
 }
 
-function addressSearch(address) {
+function currentAddress(address) {
   //console.log(address.value);
   fetch('https://nominatim.openstreetmap.org/search?q=' + address.value +
       '&format=json&polygon=1&addressdetails=1').
@@ -25,9 +26,28 @@ function addressSearch(address) {
         return response.json();
       }).
       then(function(queryJson) {
-        console.log(queryJson);
+        //console.log(queryJson);
         loc = [queryJson[0].lat, queryJson[0].lon];
+        //console.log(loc + ' loc');
         locMarker.setLatLng(loc);
+      }).
+      catch(function(error) {
+        console.log(error);
+      });
+}
+
+function currentDestination(address) {
+  //console.log(address.value);
+  fetch('https://nominatim.openstreetmap.org/search?q=' + address.value +
+      '&format=json&polygon=1&addressdetails=1').
+      then(function(response) {
+        return response.json();
+      }).
+      then(function(queryJson) {
+        //console.log(queryJson);
+        dest = [queryJson[0].lat, queryJson[0].lon];
+        //console.log(dest + ' dest');
+        destMarker.setLatLng(dest).addTo(mymap);
       }).
       catch(function(error) {
         console.log(error);
@@ -38,7 +58,14 @@ function addressSearch(address) {
 let searchButton = document.getElementById('searchButton');
 searchButton.addEventListener('click', function() {
   // Tänne syötteiden tarkistus
-  addressSearch(inputLocation);
+  console.log(inputLocation.value);
+  if (inputLocation.value !== '') {
+    currentAddress(inputLocation);
+  }
+  console.log(inputDestination.value);
+  if (inputDestination.value !== '') {
+    currentDestination(inputDestination);
+  } else mymap.removeLayer(destMarker); // mikäli määränpään syöte on tyhjä, poistetaan markeri kartalta
 });
 
 function showError(error) {

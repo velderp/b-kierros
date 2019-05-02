@@ -125,7 +125,7 @@ mymap.on('contextmenu', (e) => {
   setDest.addEventListener('click', function() {
     dest = [e.latlng.lat, e.latlng.lng];
     destMarker.setLatLng(e.latlng).addTo(mymap);
-    // inputDestination.value = dest;
+    inputDestination.value = dest;
     mymap.closePopup(contextPopup);
   });
 });
