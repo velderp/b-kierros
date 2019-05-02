@@ -46,13 +46,13 @@ function search() {
   let searchType = 'places',
       radius = slider.value,
       searchString = loc.toString() + ',' + radius / 1000;
-
+  
   if (previousQueries[searchType] === searchString) {
     console.log(searchString);
     addPlaceMarkers(searchType);
   } else {
     previousQueries[searchType] = searchString;
-
+    
     // Korvataan vanha hakualue uudella
     searchCircles.clearLayers();
     L.circle(loc, {
@@ -60,7 +60,7 @@ function search() {
       fillOpacity: .1,
       radius: radius,
     }).addTo(searchCircles);
-
+    
     // Tehdään haku API:sta
     apiRequest(searchString, searchType);
   }
@@ -70,7 +70,7 @@ function apiRequest(searchString, type) {
   let proxyUrl = 'https://cors-anywhere.herokuapp.com/',
       targetUrl = `http://open-api.myhelsinki.fi/v1/${type}/?distance_filter=`,
       request = proxyUrl + targetUrl + searchString;
-
+  
   console.log(request);
   fetch(request).
       then(function(response) {
@@ -94,7 +94,7 @@ function apiRequest(searchString, type) {
 function addPlaceMarkers(type) {
   placeMarkers.clearLayers();
   let places = previousResults[type];
-
+  
   for (let key in places) {
     if (places.hasOwnProperty(key)) {
       // Tänne tulee paikkojen suodatus
@@ -108,9 +108,9 @@ function addPlaceMarkers(type) {
 }
 
 // Karttaklikkaus
-let contextHtml = `<div id="setLoc" style="color: dodgerblue">Aseta sijainti</div><br>
-                   <div id="setDest" style="color: dodgerblue">Aseta määränpää</div>`,
-    contextPopup = L.popup().setContent(contextHtml);
+const contextPopup = L.popup().
+    setContent(`<div id="setLoc" style="color: dodgerblue">Aseta sijainti</div><br>
+                <div id="setDest" style="color: dodgerblue">Aseta määränpää</div>`);
 
 mymap.on('contextmenu', (e) => {
   contextPopup.setLatLng(e.latlng).addTo(mymap).openOn(mymap);
@@ -118,10 +118,14 @@ mymap.on('contextmenu', (e) => {
   setLoc.addEventListener('click', function() {
     loc = [e.latlng.lat, e.latlng.lng];
     locMarker.setLatLng(e.latlng);
+    inputLocation.value = loc;
+    mymap.closePopup(contextPopup);
   });
   let setDest = document.getElementById('setDest');
   setDest.addEventListener('click', function() {
     dest = [e.latlng.lat, e.latlng.lng];
     destMarker.setLatLng(e.latlng).addTo(mymap);
+    // inputDestination.value = dest;
+    mymap.closePopup(contextPopup);
   });
 });
