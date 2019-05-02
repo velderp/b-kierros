@@ -33,6 +33,7 @@ function currentAddress(address) {
     });
 }
 
+let route;
 function currentDestination(address) {
     //console.log(address.value);
     fetch('https://nominatim.openstreetmap.org/search?q=' + address.value +
@@ -43,19 +44,17 @@ function currentDestination(address) {
         dest = [queryJson[0].lat, queryJson[0].lon];
         //console.log(dest + ' dest');
         destMarker.setLatLng(dest).addTo(mymap);
-
-
-        let route = L.Routing.control({
-
+        
+        if (!(route === undefined)) route.setWaypoints([]);
+        route = L.Routing.control({
             waypoints: [
-                L.latLng(loc),
-                L.latLng(dest)
+                loc,
+                dest,
             ],
-            router: L.Routing.mapbox('pk.eyJ1IjoidmVsZGVycCIsImEiOiJjanVzOGlpcjMwY3puM3prM3Fyd2JmN3VyIn0.TkoFbaKL3EvCwGbvFbWYPA'),
-
+            router: L.Routing.mapbox('pk.eyJ1IjoidmVsZGVycCIsImEiOiJjanVzOGlpcjMwY3puM3prM3Fyd2JmN3VyIn0.TkoFbaKL3EvCwGbvFbWYPA',
+                { profile: 'mapbox/walking' }),
+            show: false,
         });
-        routeGroup.clearLayers();
-        mymap.removeLayer(route);
         route.addTo(mymap);
 
     }).catch(function (error) {
@@ -74,7 +73,10 @@ searchButton.addEventListener('click', function () {
     console.log(inputDestination.value);
     if (inputDestination.value !== '') {
         currentDestination(inputDestination);
-    } else mymap.removeLayer(destMarker); // mikäli määränpään syöte on tyhjä, poistetaan markeri kartalta
+    } else {
+        mymap.removeLayer(destMarker);
+        route.setWaypoints([]);
+    } // mikäli määränpään syöte on tyhjä, poistetaan markeri ja reitti kartalta
 });
 
 function showError(error) {
