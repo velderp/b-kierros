@@ -16,7 +16,6 @@ let loc = [60.171, 24.9415],  // Alkusijainti (rautatieasema)
     dest = [],
     placeMarkers = L.layerGroup().addTo(mymap),
     searchCircles = L.layerGroup().addTo(mymap),
-    routeGroup = L.layerGroup().addTo(mymap),
     previousQueries = {}, // Tähän tallennetaan viimeisimmät hakuehdot tyypeittäin
     previousResults = {}, // Tähän tallennetaan viimeisimmät hakutulokset tyypeittäin
     tags = {},
@@ -44,33 +43,58 @@ let loc = [60.171, 24.9415],  // Alkusijainti (rautatieasema)
     });
 locMarker.bindPopup('hmm Terve kaikille jotka tätä channelii kuuntelee! =p');
 
-function search() {
-  let searchType = 'places',
-      radius = slider.value,
-      searchString = loc.toString() + ',' + radius / 1000;
+function search(coords) {
+  let type = 'places',
+      searchArray = createSearchArray(coords);
   
-  if (previousQueries[searchType] === searchString) {
-    console.log(searchString);
-    addPlaceMarkers(searchType);
+  if (previousQueries[type] === searchArray.toString()) {
+    console.log('no request');
+    addPlaceMarkers(type);
   } else {
-    previousQueries[searchType] = searchString;
-    
-    // Korvataan vanha hakualue uudella
+    previousQueries[type] = searchArray.toString();
+    previousResults[type] = {};
     searchCircles.clearLayers();
-    L.circle(loc, {
-      color: typeColors[searchType],
-      fillOpacity: .1,
-      radius: radius,
-    }).addTo(searchCircles);
     
-    // Tehdään haku API:sta
-    apiRequest(searchString, searchType);
+    for (let i = 0; i < searchArray.length; i++) {
+      let latlon = searchArray[i],
+          isLast = (i === searchArray.length - 1);
+      // Korvataan vanha hakualue uudella
+      L.circle(latlon, {
+        color: typeColors[type],
+        fillOpacity: .1,
+        radius: slider.value,
+      }).addTo(searchCircles);
+      
+      // Tehdään haku API:sta
+      apiRequest(latlon, isLast);
+    }
   }
 }
 
-function apiRequest(searchString, type) {
-  let proxyUrl = 'https://cors-anywhere.herokuapp.com/',
+function createSearchArray(coords) {
+  let radius = slider.value,
+      searchArray = [loc],
+      prev = L.latLng(loc);
+  
+  for (let i = 0; i < coords.length; i++) {
+    let c = coords[i],
+        latlon = L.latLng(c),
+        distance = prev.distanceTo(latlon);
+    if (distance >= radius) {
+      searchArray.push([c.lat, c.lng]);
+      prev = L.latLng(coords[i]);
+    }
+  }
+  if (coords.length > 1) searchArray.push(dest);
+  return searchArray;
+}
+
+function apiRequest(latlon, isLast) {
+  let type = 'places',
+      radius = slider.value / 1000,
+      proxyUrl = 'https://cors-anywhere.herokuapp.com/',
       targetUrl = `http://open-api.myhelsinki.fi/v1/${type}/?distance_filter=`,
+      searchString = latlon.toString() + ',' + radius,
       request = proxyUrl + targetUrl + searchString;
   tags[type] = {};  // Tehdään tämä muualla, kun implementoidaan haku reitin varrelta
   
@@ -81,7 +105,6 @@ function apiRequest(searchString, type) {
       }).then(function(json) {
     console.log(json);
     // Lisätään löydetyt paikat mapiin, jotta reitin varrelta hakiessa vältytään duplikaateilta
-    previousResults[type] = {};
     for (let i = 0; i < json.data.length; i++) {
       let places = previousResults[type],
           p = json.data[i],
@@ -93,8 +116,7 @@ function apiRequest(searchString, type) {
         tags[type][id] = p.tags[i].name;
       }
     }
-    // Korvataan edelliset paikkamerkit uusilla
-    addPlaceMarkers(type);
+    if (isLast) addPlaceMarkers(type);
   }).catch(function(virhe) {
     console.log(virhe);
   });
@@ -129,10 +151,10 @@ function createPopupContent(place, type) {
   switch (type) {
     case 'places':
       break;
-      
+    
     case 'activities':
       break;
-      
+    
     case 'events':
       break;
   }
