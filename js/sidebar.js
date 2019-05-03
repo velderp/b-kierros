@@ -72,22 +72,34 @@ function currentDestination(address) {
   });
 }
 
-//
+// hakunapin toiminnallisuus
+
 let searchButton = document.getElementById('searchButton');
 searchButton.addEventListener('click', function() {
   // Tänne syötteiden tarkistus
-  console.log(inputLocation.value);
   if (inputLocation.value !== '') {
+    console.log('location: ' + inputLocation.value);
     currentAddress(inputLocation);
-  }
-  console.log(inputDestination.value);
+  } else console.log('no current location given');
   if (inputDestination.value !== '') {
+    console.log('destination: ' + inputDestination.value);
     currentDestination(inputDestination);
   } else {
+    console.log('no current destination given, searching only nearby current location..');
     mymap.removeLayer(destMarker);
     if (route !== undefined) route.setWaypoints([]);
     search([loc]);
-  } // mikäli määränpään syöte on tyhjä, poistetaan markeri ja reitti kartalta
+  }
+
+  const tagsToBeRemoved = document.getElementById('tagList');
+  let tagCounter = 0;
+  while (tagsToBeRemoved.firstChild) {
+    tagsToBeRemoved.removeChild(tagsToBeRemoved.firstChild);
+    tagCounter++;
+  }
+  console.log(tagCounter + " tags removed from the list")
+
+  // mikäli määränpään syöte on tyhjä, poistetaan markeri ja reitti kartalta
 });
 
 function showError(error) {
@@ -124,12 +136,12 @@ function hideSidebarToggle() {
 
     sidebarContent.style.display = 'none';
     hideSidebar.innerHTML = '>>';
-    console.log('Sidebar hidden');
+    console.log('sidebar hidden');
     hideSidebar.style.right = '-' + sidebarWidthValue.trim();
 
   } else {
     sidebarContent.style.display = 'block';
-    console.log('Sidebar visible');
+    console.log('sidebar visible');
     hideSidebar.innerHTML = '<<';
     hideSidebar.style.right = '0';
 
@@ -137,19 +149,22 @@ function hideSidebarToggle() {
 
 }
 
-// tag -listan piilottaminen ja muu käsittely
+// listan piilottaminen
 
+const tagListWrapper = document.getElementById('tagList-wrapper');
 const tagButton = document.getElementById('tagButton');
 const tagList = document.getElementById('tagList');
 tagButton.addEventListener('click', hideTagsToggle);
 
 function hideTagsToggle() {
 
-  if (tagList.style.display === 'block')
-    tagList.style.display = 'none';
+  if (tagListWrapper.style.display === 'block')
+    tagListWrapper.style.display = 'none';
   else
-    tagList.style.display = 'block';
+    tagListWrapper.style.display = 'block';
 }
+
+// tag -listan luonti
 
 let tagPlaceholder = [];
 
@@ -178,13 +193,24 @@ function getTags() {
 
       document.getElementById(key).addEventListener('change', addPlaceMarkers);
     }
-
-    // while (tagList.firstChild) {
-    //   taglist.removeChild(taglist.firstChild);
-    // }
-
   }
-  // for (let i = 0; i < 5; i++) {
-
-  // }
 }
+
+// valitse kaikki tagit
+
+const selectAllTags = document.getElementById('selectAllTags');
+selectAllTags.addEventListener('change', function() {
+  const tags = document.querySelectorAll('input[name="tags"]');
+  if (selectAllTags.checked === true) {
+    for (let element in tags) {
+      tags[element].checked = true;
+    }
+  } else {
+    for (let element in tags) {
+      tags[element].checked = false;
+    }
+  }
+
+  console.log(selectAllTags.checked)
+
+});
