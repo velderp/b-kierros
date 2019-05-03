@@ -1,6 +1,6 @@
 let mymap = L.map('map', {
   maxBounds: [
-    [60.0943, 24.7841],
+    [60.0943, 24.3943],
     [60.3383, 25.2403],
   ],
   center: [60.171, 24.9415],
@@ -16,7 +16,6 @@ let loc = [60.171, 24.9415],  // Alkusijainti (rautatieasema)
     dest = [],
     placeMarkers = L.layerGroup().addTo(mymap),
     searchCircles = L.layerGroup().addTo(mymap),
-    routeGroup = L.layerGroup().addTo(mymap),
     previousQueries = {}, // Tähän tallennetaan viimeisimmät hakuehdot tyypeittäin
     previousResults = {}, // Tähän tallennetaan viimeisimmät hakutulokset tyypeittäin
     tags = {},
@@ -44,44 +43,69 @@ let loc = [60.171, 24.9415],  // Alkusijainti (rautatieasema)
     });
 locMarker.bindPopup('hmm Terve kaikille jotka tätä channelii kuuntelee! =p');
 
-function search() {
-  let searchType = 'places',
-      radius = slider.value,
-      searchString = loc.toString() + ',' + radius / 1000;
+function search(coords) {
+  let type = 'places',
+      searchArray = createSearchArray(coords);
   
-  if (previousQueries[searchType] === searchString) {
-    console.log(searchString);
-    addPlaceMarkers(searchType);
+  if (previousQueries[type] === searchArray.toString()) {
+    // Reitti ei ole muuttunut edellisen haun jälkeen, lisätään vain merkit
+    console.log('no request');
+    addPlaceMarkers(type);
   } else {
-    previousQueries[searchType] = searchString;
-    
-    // Korvataan vanha hakualue uudella
+    previousQueries[type] = searchArray.toString();
+    previousResults[type] = {};
+    tags[type] = {};
     searchCircles.clearLayers();
-    L.circle(loc, {
-      color: typeColors[searchType],
-      fillOpacity: .1,
-      radius: radius,
-    }).addTo(searchCircles);
-    
-    // Tehdään haku API:sta
-    apiRequest(searchString, searchType);
+  
+    console.log('Requesting ' + type);
+    console.log(searchArray);
+    for (let i = 0; i < searchArray.length; i++) {
+      let latlon = searchArray[i];
+      // Lisätään hakualue kartalle
+      L.circle(latlon, {
+        color: typeColors[type],
+        fillOpacity: .1,
+        radius: slider.value,
+      }).addTo(searchCircles);
+      
+      // Tehdään haku API:sta
+      apiRequest(latlon);
+    }
   }
 }
 
-function apiRequest(searchString, type) {
-  let proxyUrl = 'https://cors-anywhere.herokuapp.com/',
-      targetUrl = `http://open-api.myhelsinki.fi/v1/${type}/?distance_filter=`,
-      request = proxyUrl + targetUrl + searchString;
-  tags[type] = {};  // Tehdään tämä muualla, kun implementoidaan haku reitin varrelta
+function createSearchArray(coords) {
+  let radius = slider.value,
+      searchArray = [loc],
+      prev = L.latLng(loc);
   
-  console.log(request);
+  // Lisätään taulukkoon vähintään hakusäteen välein toisistaan olevat reitin pisteet
+  for (let i = 0; i < coords.length; i++) {
+    let c = coords[i],
+        latlon = L.latLng(c),
+        distance = prev.distanceTo(latlon);
+    if (distance >= radius) {
+      searchArray.push([c.lat, c.lng]);
+      prev = L.latLng(coords[i]); // Edellinen lisätty piste
+    }
+  }
+  if (coords.length > 1) searchArray.push(dest);  // Lisätään asetettu määränpää taulukon loppuun
+  return searchArray;
+}
+
+function apiRequest(latlon) {
+  let type = 'places',
+      radius = slider.value / 1000,
+      proxyUrl = 'https://cors-anywhere.herokuapp.com/',
+      targetUrl = `http://open-api.myhelsinki.fi/v1/${type}/?distance_filter=`,
+      searchString = latlon.toString() + ',' + radius,
+      request = proxyUrl + targetUrl + searchString;
+  
   fetch(request).
       then(function(response) {
         return response.json();
       }).then(function(json) {
-    console.log(json);
     // Lisätään löydetyt paikat mapiin, jotta reitin varrelta hakiessa vältytään duplikaateilta
-    previousResults[type] = {};
     for (let i = 0; i < json.data.length; i++) {
       let places = previousResults[type],
           p = json.data[i],
@@ -93,7 +117,6 @@ function apiRequest(searchString, type) {
         tags[type][id] = p.tags[i].name;
       }
     }
-    // Korvataan edelliset paikkamerkit uusilla
     addPlaceMarkers(type);
   }).catch(function(virhe) {
     console.log(virhe);
@@ -126,13 +149,14 @@ function createPopupContent(place, type) {
                  <p>${streetAddr}<br>
                   ${postalCode} ${locality}</p>`;
   
+  // Tyyppikohtaiset sisällöt
   switch (type) {
     case 'places':
       break;
-      
+    
     case 'activities':
       break;
-      
+    
     case 'events':
       break;
   }
