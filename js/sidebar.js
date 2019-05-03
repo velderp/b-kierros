@@ -211,6 +211,7 @@ selectAllTags.addEventListener('change', function() {
     }
   }
 
+  addPlaceMarkers();
   console.log(selectAllTags.checked)
 
 });
