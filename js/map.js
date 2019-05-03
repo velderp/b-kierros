@@ -44,12 +44,13 @@ let loc = [60.171, 24.9415],  // Alkusijainti (rautatieasema)
 locMarker.bindPopup('hmm Terve kaikille jotka tätä channelii kuuntelee! =p');
 
 function search(coords) {
-  let type = 'places',
+  let type = document.querySelector('input[name="types"]:checked').id,
       searchArray = createSearchArray(coords);
   
   if (previousQueries[type] === searchArray.toString()) {
     // Reitti ei ole muuttunut edellisen haun jälkeen, lisätään vain merkit
     console.log('no request');
+    getTags();
     addPlaceMarkers();
   } else {
     previousQueries[type] = searchArray.toString();
@@ -146,8 +147,8 @@ function addPlaceMarkers() {
             hasTag = true;
             break;
           }
-          if (hasTag) break;
         }
+        if (hasTag) break;
       }
     }
   }

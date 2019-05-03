@@ -76,7 +76,17 @@ function currentDestination(address) {
 
 let searchButton = document.getElementById('searchButton');
 searchButton.addEventListener('click', function() {
-  // Tänne syötteiden tarkistus
+  // Tyhjennetään tag-lista
+  const tagsToBeRemoved = document.getElementById('tagList');
+  let tagCounter = 0;
+  while (tagsToBeRemoved.firstChild) {
+    tagsToBeRemoved.removeChild(tagsToBeRemoved.firstChild);
+    tagCounter++;
+  }
+  console.log(tagCounter + " tags removed from the list");
+  tagPlaceholder = [];
+  
+  // Syötteiden tarkistus
   if (inputLocation.value !== '') {
     console.log('location: ' + inputLocation.value);
     currentAddress(inputLocation);
@@ -90,15 +100,6 @@ searchButton.addEventListener('click', function() {
     if (route !== undefined) route.setWaypoints([]);
     search([loc]);
   }
-
-  const tagsToBeRemoved = document.getElementById('tagList');
-  let tagCounter = 0;
-  while (tagsToBeRemoved.firstChild) {
-    tagsToBeRemoved.removeChild(tagsToBeRemoved.firstChild);
-    tagCounter++;
-  }
-  console.log(tagCounter + " tags removed from the list")
-
   // mikäli määränpään syöte on tyhjä, poistetaan markeri ja reitti kartalta
 });
 
@@ -169,29 +170,31 @@ function hideTagsToggle() {
 let tagPlaceholder = [];
 
 function getTags() {
-
-  for (let key in tags.places) {
-
-    if (!tagPlaceholder.includes(tags.places[key])) {
-      const taqlistItem = document.createElement('li');
-      const tagLabel = document.createElement('label');
-      const tagCheckbox = document.createElement('input');
-
-      tagCheckbox.type = 'checkbox';
-      tagCheckbox.name = 'tags';
-      tagCheckbox.id = key;
-      tagCheckbox.checked = true;
-
-      tagLabel.setAttribute('for', tags.places[key]);
-      tagLabel.innerText = tags.places[key]; // innerTextiin APIlta saatu tieto suodattimista!
-
-      taqlistItem.appendChild(tagCheckbox);
-      taqlistItem.appendChild(tagLabel);
-      tagList.appendChild(taqlistItem);
-
-      tagPlaceholder.push(tags.places[key]);
-
-      document.getElementById(key).addEventListener('change', addPlaceMarkers);
+  let type = document.querySelector('input[name="types"]:checked').id;
+  for (let key in tags[type]) {
+    if (tags[type].hasOwnProperty(key)) {
+      let tag = tags[type][key];
+      if (!tagPlaceholder.includes(tag)) {
+        const taqlistItem = document.createElement('li');
+        const tagLabel = document.createElement('label');
+        const tagCheckbox = document.createElement('input');
+    
+        tagCheckbox.type = 'checkbox';
+        tagCheckbox.name = 'tags';
+        tagCheckbox.id = key;
+        tagCheckbox.checked = true;
+    
+        tagLabel.setAttribute('for', tag);
+        tagLabel.innerText = tag; // innerTextiin APIlta saatu tieto suodattimista!
+    
+        taqlistItem.appendChild(tagCheckbox);
+        taqlistItem.appendChild(tagLabel);
+        tagList.appendChild(taqlistItem);
+    
+        tagPlaceholder.push(tag);
+    
+        document.getElementById(key).addEventListener('change', addPlaceMarkers);
+      }
     }
   }
 }
