@@ -46,7 +46,7 @@ locMarker.bindPopup('hmm Terve kaikille jotka tätä channelii kuuntelee! =p');
 function search(coords) {
   let type = 'places',
       searchArray = createSearchArray(coords);
-
+  
   if (previousQueries[type] === searchArray.toString()) {
     // Reitti ei ole muuttunut edellisen haun jälkeen, lisätään vain merkit
     console.log('no request');
@@ -56,7 +56,7 @@ function search(coords) {
     previousResults[type] = {};
     tags[type] = {};
     searchCircles.clearLayers();
-
+    
     console.log('Requesting ' + type);
     console.log(searchArray);
     for (let i = 0; i < searchArray.length; i++) {
@@ -67,7 +67,7 @@ function search(coords) {
         fillOpacity: .1,
         radius: slider.value,
       }).addTo(searchCircles);
-
+      
       // Tehdään haku API:sta
       apiRequest(latlon);
     }
@@ -78,7 +78,7 @@ function createSearchArray(coords) {
   let radius = slider.value,
       searchArray = [loc],
       prev = L.latLng(loc);
-
+  
   // Lisätään taulukkoon vähintään hakusäteen välein toisistaan olevat reitin pisteet
   for (let i = 0; i < coords.length; i++) {
     let c = coords[i],
@@ -100,7 +100,7 @@ function apiRequest(latlon) {
       targetUrl = `http://open-api.myhelsinki.fi/v1/${type}/?distance_filter=`,
       searchString = latlon.toString() + ',' + radius,
       request = proxyUrl + targetUrl + searchString;
-
+  
   fetch(request).
       then(function(response) {
         return response.json();
@@ -125,18 +125,30 @@ function apiRequest(latlon) {
 }
 
 function addPlaceMarkers() {
-  let type = document.querySelector('input[name="types"]:checked').id;
+  let type = document.querySelector('input[name="types"]:checked').id,
+      places = previousResults[type],
+      filterTags = document.getElementsByName('tags');
   placeMarkers.clearLayers();
-  let places = previousResults[type];
-
+  
   for (let key in places) {
     if (places.hasOwnProperty(key)) {
       // Tänne tulee paikkojen suodatus
       let p = places[key],
           lat = p.location.lat,
-          lon = p.location.lon,
-          content = createPopupContent(p, type);
-      L.marker([lat, lon]).addTo(placeMarkers).bindPopup(content);
+          lon = p.location.lon;
+      
+      for (let i = 0; i < p.tags.length; i++) {
+        let hasTag = false;
+        for (let j = 0; j < filterTags.length; j++) {
+          if (filterTags[j].checked && p.tags[i].id === filterTags[j].id) {
+            let content = createPopupContent(p, type);
+            L.marker([lat, lon]).addTo(placeMarkers).bindPopup(content);
+            hasTag = true;
+            break;
+          }
+          if (hasTag) break;
+        }
+      }
     }
   }
 }
@@ -150,19 +162,19 @@ function createPopupContent(place, type) {
                  <h3><a href="${place.info_url}" target="_blank">${place.name.fi}</a></h3>
                  <p>${streetAddr}<br>
                   ${postalCode} ${locality}</p>`;
-
+  
   // Tyyppikohtaiset sisällöt
   switch (type) {
     case 'places':
       break;
-
+    
     case 'activities':
       break;
-
+    
     case 'events':
       break;
   }
-
+  
   content += `<p>${place.description.body}</p>`;
   content += '</div>';
   return content;
