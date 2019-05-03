@@ -60,9 +60,12 @@ p {
     margin: 0 0 10px 0;
 }
 
+#tagList-wrapper {
+    display: none;
+}
+
 #tagList {
     margin-top: 10px;
-    display: none;
     list-style-type: none;
     padding: 0;
 }
