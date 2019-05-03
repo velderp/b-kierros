@@ -4,13 +4,13 @@ const inputDestination = document.getElementById('inputDestination');
 geolocationButton.addEventListener('click', getCurrentLocation);
 
 function getCurrentLocation() {
-  
+
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(getPosition, showError);
   } else {
     prompt('Selain ei tue paikannusta');
   }
-  
+
 }
 
 function getPosition(position) {
@@ -45,7 +45,7 @@ function currentDestination(address) {
     dest = [queryJson[0].lat, queryJson[0].lon];
     //console.log(dest + ' dest');
     destMarker.setLatLng(dest).addTo(mymap);
-    
+
     if (!(route === undefined)) route.setWaypoints([]); // Poistetaan edellinen reitti
     route = L.Routing.control({
       waypoints: [
@@ -57,14 +57,16 @@ function currentDestination(address) {
           {
             profile: 'mapbox/walking',
           }),
-      createMarker: function() { return null; },
+      createMarker: function() {
+        return null;
+      },
       show: false,
     });
     route.on('routeselected', function(e) {
       search(e.route.coordinates);
     });
     route.addTo(mymap);
-    
+
   }).catch(function(error) {
     console.log(error);
   });
@@ -113,26 +115,26 @@ hideSidebar.addEventListener('click', hideSidebarToggle);
 
 function hideSidebarToggle() {
   console.log('sidebarHideButton pressed');
-  
+
   const styles = getComputedStyle(document.documentElement);
-  
+
   let sidebarWidthValue = styles.getPropertyValue('--sidebar-hideButton-width');
-  
+
   if (sidebarContent.style.display === 'block') {
-    
+
     sidebarContent.style.display = 'none';
     hideSidebar.innerHTML = '>>';
     console.log('Sidebar hidden');
     hideSidebar.style.right = '-' + sidebarWidthValue.trim();
-    
+
   } else {
     sidebarContent.style.display = 'block';
     console.log('Sidebar visible');
     hideSidebar.innerHTML = '<<';
     hideSidebar.style.right = '0';
-    
+
   }
-  
+
 }
 
 // tag -listan piilottaminen ja muu käsittely
@@ -142,30 +144,47 @@ const tagList = document.getElementById('tagList');
 tagButton.addEventListener('click', hideTagsToggle);
 
 function hideTagsToggle() {
-  
+
   if (tagList.style.display === 'block')
     tagList.style.display = 'none';
   else
     tagList.style.display = 'block';
 }
 
-function getTags() {
-  for (let i = 0; i < 5; i++) {
-    const taqlistItem = document.createElement('li');
-    const tagLabel = document.createElement('label');
-    const tagCheckbox = document.createElement('input');
-    
-    tagCheckbox.type = 'checkbox';
-    tagCheckbox.name = 'tags';
-    tagCheckbox.id = 'suodatin' + i;
-    
-    tagLabel.setAttribute('for', 'suodatin' + i);
-    tagLabel.innerText = 'Suodatin #' + i; // innerTextiin APIlta saatu tieto suodattimista!
-    
-    taqlistItem.appendChild(tagCheckbox);
-    taqlistItem.appendChild(tagLabel);
-    tagList.appendChild(taqlistItem);
-  }
-}
+let tagPlaceholder = [];
 
-getTags();
+function getTags() {
+
+  for (let key in tags.places) {
+
+    if (!tagPlaceholder.includes(tags.places[key])) {
+      const taqlistItem = document.createElement('li');
+      const tagLabel = document.createElement('label');
+      const tagCheckbox = document.createElement('input');
+
+      tagCheckbox.type = 'checkbox';
+      tagCheckbox.name = 'tags';
+      tagCheckbox.id = key;
+      tagCheckbox.checked = true;
+
+      tagLabel.setAttribute('for', tags.places[key]);
+      tagLabel.innerText = tags.places[key]; // innerTextiin APIlta saatu tieto suodattimista!
+
+      taqlistItem.appendChild(tagCheckbox);
+      taqlistItem.appendChild(tagLabel);
+      tagList.appendChild(taqlistItem);
+
+      tagPlaceholder.push(tags.places[key]);
+
+      document.getElementById(key).addEventListener('change', addPlaceMarkers);
+    }
+
+    // while (tagList.firstChild) {
+    //   taglist.removeChild(taglist.firstChild);
+    // }
+
+  }
+  // for (let i = 0; i < 5; i++) {
+
+  // }
+}

@@ -46,17 +46,17 @@ locMarker.bindPopup('hmm Terve kaikille jotka tätä channelii kuuntelee! =p');
 function search(coords) {
   let type = 'places',
       searchArray = createSearchArray(coords);
-  
+
   if (previousQueries[type] === searchArray.toString()) {
     // Reitti ei ole muuttunut edellisen haun jälkeen, lisätään vain merkit
     console.log('no request');
-    addPlaceMarkers(type);
+    addPlaceMarkers();
   } else {
     previousQueries[type] = searchArray.toString();
     previousResults[type] = {};
     tags[type] = {};
     searchCircles.clearLayers();
-  
+
     console.log('Requesting ' + type);
     console.log(searchArray);
     for (let i = 0; i < searchArray.length; i++) {
@@ -67,7 +67,7 @@ function search(coords) {
         fillOpacity: .1,
         radius: slider.value,
       }).addTo(searchCircles);
-      
+
       // Tehdään haku API:sta
       apiRequest(latlon);
     }
@@ -78,7 +78,7 @@ function createSearchArray(coords) {
   let radius = slider.value,
       searchArray = [loc],
       prev = L.latLng(loc);
-  
+
   // Lisätään taulukkoon vähintään hakusäteen välein toisistaan olevat reitin pisteet
   for (let i = 0; i < coords.length; i++) {
     let c = coords[i],
@@ -100,7 +100,7 @@ function apiRequest(latlon) {
       targetUrl = `http://open-api.myhelsinki.fi/v1/${type}/?distance_filter=`,
       searchString = latlon.toString() + ',' + radius,
       request = proxyUrl + targetUrl + searchString;
-  
+
   fetch(request).
       then(function(response) {
         return response.json();
@@ -117,16 +117,18 @@ function apiRequest(latlon) {
         tags[type][id] = p.tags[i].name;
       }
     }
-    addPlaceMarkers(type);
+    getTags();
+    addPlaceMarkers();
   }).catch(function(virhe) {
     console.log(virhe);
   });
 }
 
-function addPlaceMarkers(type) {
+function addPlaceMarkers() {
+  let type = 'places';
   placeMarkers.clearLayers();
   let places = previousResults[type];
-  
+
   for (let key in places) {
     if (places.hasOwnProperty(key)) {
       // Tänne tulee paikkojen suodatus
@@ -148,19 +150,19 @@ function createPopupContent(place, type) {
                  <h3><a href="${place.info_url}" target="_blank">${place.name.fi}</a></h3>
                  <p>${streetAddr}<br>
                   ${postalCode} ${locality}</p>`;
-  
+
   // Tyyppikohtaiset sisällöt
   switch (type) {
     case 'places':
       break;
-    
+
     case 'activities':
       break;
-    
+
     case 'events':
       break;
   }
-  
+
   content += `<p>${place.description.body}</p>`;
   content += '</div>';
   return content;
