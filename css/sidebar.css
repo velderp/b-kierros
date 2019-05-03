@@ -51,6 +51,15 @@ p {
 }
 
 
+#tagButton {
+    margin-top: 15px;
+}
+
+#tagTypesList {
+    list-style-type: none;
+    margin: 0 0 10px 0;
+}
+
 #tagList {
     margin-top: 10px;
     display: none;
@@ -78,10 +87,6 @@ p {
 
 #searchButton {
     margin-top: 3px;
-}
-
-#tagButton {
-    margin-top: 15px;
 }
 
 

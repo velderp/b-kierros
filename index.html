@@ -32,8 +32,6 @@
             <label for="inputDestination" id="inputDestination-label" style="display: none"></label>
             <input id="inputDestination" class="sidebar-input" type="text" placeholder="Syötä määränpää"><br>
 
-            <button class="sidebar-button" id="searchButton">Hae!</button>
-
             <!-- liukusäädin -->
             <div class="slideContainer">
                 <label for="searchRange" style="display: none"></label>
@@ -49,6 +47,17 @@
                 output.innerHTML = this.value;
               };
             </script>
+
+            <form>
+                <ul id="tagTypesList">
+                    <li><input name="types" id="places" type="radio" checked><label for="places">Paikat</label></li>
+                    <li><input name="types" id="events" type="radio" disabled><label for="events">Tapahtumat</label></li>
+                    <li><input name="types" id="activities" type="radio" disabled><label for="activities">Aktiviteetit</label>
+                    </li>
+                </ul>
+            </form>
+
+            <button class="sidebar-button" id="searchButton">Hae!</button>
 
             <!-- pudotusvalikko -->
             <button class="sidebar-button" type="button" id="tagButton">Suodata</button>

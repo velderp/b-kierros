@@ -94,7 +94,7 @@ function createSearchArray(coords) {
 }
 
 function apiRequest(latlon) {
-  let type = 'places',
+  let type = document.querySelector('input[name="types"]:checked').id,
       radius = slider.value / 1000,
       proxyUrl = 'https://cors-anywhere.herokuapp.com/',
       targetUrl = `http://open-api.myhelsinki.fi/v1/${type}/?distance_filter=`,
@@ -125,7 +125,7 @@ function apiRequest(latlon) {
 }
 
 function addPlaceMarkers() {
-  let type = 'places';
+  let type = document.querySelector('input[name="types"]:checked').id;
   placeMarkers.clearLayers();
   let places = previousResults[type];
 
