@@ -20,14 +20,12 @@ function getPosition(position) {
 }
 
 function currentAddress(address) {
-  //console.log(address.value);
   fetch('https://nominatim.openstreetmap.org/search?q=' + address.value +
       '&format=json&polygon=1&addressdetails=1').then(function(response) {
     return response.json();
   }).then(function(queryJson) {
-    //console.log(queryJson);
+    console.log(queryJson[0]);
     loc = [queryJson[0].lat, queryJson[0].lon];
-    //console.log(loc + ' loc');
     locMarker.setLatLng(loc);
   }).catch(function(error) {
     console.log(error);
@@ -37,14 +35,12 @@ function currentAddress(address) {
 let route;
 
 function currentDestination(address) {
-  //console.log(address.value);
+  console.log('currentDestination() with value ' + address.value);
   fetch('https://nominatim.openstreetmap.org/search?q=' + address.value +
       '&format=json&polygon=1&addressdetails=1').then(function(response) {
     return response.json();
   }).then(function(queryJson) {
-    //console.log(queryJson);
     dest = [queryJson[0].lat, queryJson[0].lon];
-    //console.log(dest + ' dest');
     destMarker.setLatLng(dest).addTo(mymap);
 
     if (!(route === undefined)) route.setWaypoints([]); // Poistetaan edellinen reitti
@@ -74,31 +70,25 @@ function currentDestination(address) {
 }
 
 // hakunapin toiminnallisuus
-
 let searchButton = document.getElementById('searchButton');
 searchButton.addEventListener('click', function() {
   // Tyhjennetään tag-lista
   const tagsToBeRemoved = document.getElementById('tagList');
-  let tagCounter = 0;
   while (tagsToBeRemoved.firstChild) {
     tagsToBeRemoved.removeChild(tagsToBeRemoved.firstChild);
-    tagCounter++;
   }
-  console.log(tagCounter + ' tags removed from the list');
   tagPlaceholder = [];
-  
+
   // Syötteiden tarkistus
   if (inputLocation.value !== '') {
-    console.log('location: ' + inputLocation.value);
     currentAddress(inputLocation);
-  } else console.log('no current location given');
+  }
   if (inputDestination.value !== '') {
-    console.log('destination: ' + inputDestination.value);
     currentDestination(inputDestination);
   } else {
-    console.log('no current destination given, searching only nearby current location..');
     mymap.removeLayer(destMarker);
     if (route !== undefined) route.setWaypoints([]);
+    console.log('search()');
     search([loc]);
   }
   // mikäli määränpään syöte on tyhjä, poistetaan markeri ja reitti kartalta
@@ -122,13 +112,11 @@ function showError(error) {
 }
 
 // sivupalkin piilotus
-
 const sidebarContent = document.getElementById('sidebar');
 const hideSidebar = document.getElementById('sidebarHideButton');
 hideSidebar.addEventListener('click', hideSidebarToggle);
 
 function hideSidebarToggle() {
-  console.log('sidebarHideButton pressed');
 
   const styles = getComputedStyle(document.documentElement);
 
@@ -138,12 +126,10 @@ function hideSidebarToggle() {
 
     sidebarContent.style.display = 'none';
     hideSidebar.innerHTML = '>>';
-    console.log('sidebar hidden');
     hideSidebar.style.right = '-' + sidebarWidthValue.trim();
 
   } else {
     sidebarContent.style.display = 'block';
-    console.log('sidebar visible');
     hideSidebar.innerHTML = '<<';
     hideSidebar.style.right = '0';
 
@@ -152,7 +138,6 @@ function hideSidebarToggle() {
 }
 
 // listan piilottaminen
-
 const tagListWrapper = document.getElementById('tagList-wrapper');
 const tagButton = document.getElementById('tagButton');
 const tagList = document.getElementById('tagList');
@@ -167,7 +152,6 @@ function hideTagsToggle() {
 }
 
 // tag -listan luonti
-
 let tagPlaceholder = [];
 
 function getTags() {
@@ -179,22 +163,23 @@ function getTags() {
         const taqlistItem = document.createElement('li');
         const tagLabel = document.createElement('label');
         const tagCheckbox = document.createElement('input');
-    
+
         tagCheckbox.type = 'checkbox';
         tagCheckbox.name = 'tags';
         tagCheckbox.id = key;
         tagCheckbox.checked = true;
-        
+
         tagLabel.setAttribute('for', key);
         tagLabel.innerText = tag; // innerTextiin APIlta saatu tieto suodattimista!
-    
+
         taqlistItem.appendChild(tagCheckbox);
         taqlistItem.appendChild(tagLabel);
         tagList.appendChild(taqlistItem);
-    
+
         tagPlaceholder.push(tag);
-    
-        document.getElementById(key).addEventListener('change', addPlaceMarkers);
+
+        document.getElementById(key).
+            addEventListener('change', addPlaceMarkers);
       }
     }
   }
@@ -202,7 +187,6 @@ function getTags() {
 }
 
 // valitse kaikki tagit
-
 const selectAllTags = document.getElementById('selectAllTags');
 selectAllTags.addEventListener('change', function() {
   const tags = document.querySelectorAll('input[name="tags"]');
@@ -234,4 +218,52 @@ function sortTagElements() {
   for (let i = 0; i < itemsArray.length; i++) {
     tagList.appendChild(itemsArray[i].item);
   }
+}
+
+//sivupalkin infot
+const placesInfoList = document.getElementById('placesInfoList');
+
+function createPlacesInfoContent(place) {
+
+  const placesInfoListItem = document.createElement('li'),
+      content = document.createElement('div');
+
+  content.className = 'placesInfoContent';
+
+  let address = place.location.address,
+      streetAddr = (address.street_address) ? address.street_address : '',
+      postalCode = (address.postal_code) ? address.postal_code : '',
+      locality = (address.locality) ? address.locality : '';
+
+  content.innerHTML = `<h3><a href="${place.info_url}" target="_blank">${place.name.fi}</a></h3>
+                 <p>${streetAddr}
+                 ${postalCode}
+                 ${locality}</p>
+                 <button id=${'infoButtonId' + place.id} class='sidebar-button'>Lisätietoa</button>
+                 <p id=${'infoDescId' +
+  place.id} style="display:none;">${place.description.body}</p>`;
+  placesInfoListItem.appendChild(content);
+  placesInfoList.appendChild(placesInfoListItem);
+
+  let button = document.getElementById('infoButtonId' + place.id);
+  button.myparam = place.id;
+  button.addEventListener('click', showInfo);
+
+}
+
+function showInfo(evt) {
+  let buttonId = evt.target.myparam;
+  let info = document.getElementById('infoDescId' + buttonId);
+  if (info.style.display === 'block')
+    info.style.display = 'none';
+  else
+    info.style.display = 'block';
+}
+
+function clearPlacesInfoContent() {
+
+  while (placesInfoList.firstChild) {
+    placesInfoList.removeChild(placesInfoList.firstChild);
+  }
+
 }

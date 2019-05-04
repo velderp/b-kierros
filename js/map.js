@@ -45,6 +45,7 @@ let loc = [60.171, 24.9415],  // Alkusijainti (rautatieasema)
 locMarker.bindPopup('hmm Terve kaikille jotka tätä channelii kuuntelee! =p');
 
 function search(coords) {
+  console.log('search() with ' + coords);
   let type = document.querySelector('input[name="types"]:checked').id,
       searchArray = createSearchArray(coords);
   
@@ -131,6 +132,7 @@ function addPlaceMarkers() {
       places = previousResults[type],
       filterTags = document.getElementsByName('tags');
   placeMarkers.clearLayers();
+  clearPlacesInfoContent();
   
   for (let key in places) {
     if (places.hasOwnProperty(key)) {
@@ -145,6 +147,7 @@ function addPlaceMarkers() {
           if (filterTags[j].checked && p.tags[i].id === filterTags[j].id) {
             let content = createPopupContent(p, type);
             L.marker([lat, lon]).addTo(placeMarkers).bindPopup(content);
+            createPlacesInfoContent(p);
             hasTag = true;
             break;
           }
@@ -161,7 +164,7 @@ function createPopupContent(place, type) {
       streetAddr = (address.street_address) ? address.street_address : '',
       postalCode = (address.postal_code) ? address.postal_code : '',
       locality = (address.locality) ? address.locality : '',
-      content = `<div id="popup-content" style="">
+      content = `<div class="popup-content" style="">
                  <h3><a href="${place.info_url}" target="_blank">${place.name.fi}</a></h3>
                  <p>${streetAddr}<br>
                   ${postalCode} ${locality}</p>`;
