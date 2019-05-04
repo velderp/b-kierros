@@ -6,3 +6,7 @@
     max-height: 250px;
     overflow: scroll;
 }
+
+#setLoc, #setDest {
+    color: dodgerblue;
+}

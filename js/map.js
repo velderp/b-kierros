@@ -1,3 +1,4 @@
+'use strict';
 let mymap = L.map('map', {
   maxBounds: [
     [60.0943, 24.3943],
@@ -49,7 +50,7 @@ function search(coords) {
   
   if (previousQueries[type] === searchArray.toString()) {
     // Reitti ei ole muuttunut edellisen haun jälkeen, lisätään vain merkit
-    console.log('no request');
+    console.log('No request');
     getTags();
     addPlaceMarkers();
   } else {
@@ -106,7 +107,7 @@ function apiRequest(latlon) {
       then(function(response) {
         return response.json();
       }).then(function(json) {
-    // Lisätään löydetyt paikat mapiin, jotta reitin varrelta hakiessa vältytään duplikaateilta
+    // Tallennetaan löydetyt paikat ID:n mukaan, jotta reitin varrelta hakiessa vältytään duplikaateilta
     for (let i = 0; i < json.data.length; i++) {
       let places = previousResults[type],
           p = json.data[i],
@@ -154,6 +155,7 @@ function addPlaceMarkers() {
   }
 }
 
+// Luo sisällön kohteen kuplalle
 function createPopupContent(place, type) {
   let address = place.location.address,
       streetAddr = (address.street_address) ? address.street_address : '',
@@ -183,8 +185,8 @@ function createPopupContent(place, type) {
 
 // Karttaklikkaus
 const contextPopup = L.popup().
-    setContent(`<div id="setLoc" style="color: dodgerblue">Aseta sijainti</div><br>
-                <div id="setDest" style="color: dodgerblue">Aseta määränpää</div>`);
+    setContent(`<div id="setLoc">Aseta sijainti</div><br>
+                <div id="setDest">Aseta määränpää</div>`);
 
 mymap.on('contextmenu', (e) => {
   contextPopup.setLatLng(e.latlng).addTo(mymap).openOn(mymap);

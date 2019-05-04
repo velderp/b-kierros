@@ -1,3 +1,4 @@
+'use strict';
 const geolocationButton = document.getElementById('geolocationButton');
 const inputLocation = document.getElementById('inputLocation');
 const inputDestination = document.getElementById('inputDestination');
@@ -83,7 +84,7 @@ searchButton.addEventListener('click', function() {
     tagsToBeRemoved.removeChild(tagsToBeRemoved.firstChild);
     tagCounter++;
   }
-  console.log(tagCounter + " tags removed from the list");
+  console.log(tagCounter + ' tags removed from the list');
   tagPlaceholder = [];
   
   // Syötteiden tarkistus
@@ -183,8 +184,8 @@ function getTags() {
         tagCheckbox.name = 'tags';
         tagCheckbox.id = key;
         tagCheckbox.checked = true;
-    
-        tagLabel.setAttribute('for', tag);
+        
+        tagLabel.setAttribute('for', key);
         tagLabel.innerText = tag; // innerTextiin APIlta saatu tieto suodattimista!
     
         taqlistItem.appendChild(tagCheckbox);
@@ -197,6 +198,7 @@ function getTags() {
       }
     }
   }
+  sortTagElements();
 }
 
 // valitse kaikki tagit
@@ -205,16 +207,31 @@ const selectAllTags = document.getElementById('selectAllTags');
 selectAllTags.addEventListener('change', function() {
   const tags = document.querySelectorAll('input[name="tags"]');
   if (selectAllTags.checked === true) {
-    for (let element in tags) {
-      tags[element].checked = true;
+    for (let i = 0; i < tags.length; i++) {
+      tags[i].checked = true;
     }
   } else {
-    for (let element in tags) {
-      tags[element].checked = false;
+    for (let i = 0; i < tags.length; i++) {
+      tags[i].checked = false;
     }
   }
 
   addPlaceMarkers();
-  console.log(selectAllTags.checked)
-
 });
+
+// Järjestää suodatinlistan aakkosjärjestykseen
+function sortTagElements() {
+  let tagList = document.getElementById('tagList'),
+      listItems = tagList.getElementsByTagName('li'),
+      itemsArray = [];
+  for (let i = 0; i < listItems.length; i++) {
+    itemsArray.push({
+      item: listItems[i],
+      text: listItems[i].querySelector('label').innerText,
+    });
+  }
+  itemsArray.sort((a, b) => (a.text > b.text) ? 1 : -1);
+  for (let i = 0; i < itemsArray.length; i++) {
+    tagList.appendChild(itemsArray[i].item);
+  }
+}
