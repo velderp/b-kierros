@@ -1,9 +1,14 @@
 h1 {
     margin: 0 0 2% 0;
+    color: var(--title-color);
 }
 
 p {
     margin: 0;
+}
+
+button:hover {
+    background-color: var(--link-hover);
 }
 
 #currentLocation-wrapper {
@@ -130,6 +135,49 @@ p {
     border-radius: 50%;
     background: var(--button-active-color);
     cursor: pointer;
+}
+
+#placesInfoList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#placesInfoList li {
+    margin: 8px 0 8px 0;
+}
+
+.placesInfoContent {
+    background-color: var(--info-bg-color);
+    padding: 10px;
+}
+
+.placesInfoContent h3 {
+}
+
+.placesInfoContent a {
+    color: var(--link-color);
+}
+
+.placesInfoContent a:hover {
+    color: var(--main-bg-color)
+}
+
+.placesInfoContent p {
+}
+
+.placesInfoContent button {
+    padding: 1px 32px;
+    height: 22px;
+    line-height: 0;
+    margin: 10px 0 10px 0;
+
+}
+
+.infoDesc {
+    height: 100px;
+    margin-top: 10px;
+    overflow: hidden;
 }
 
 #sidebarHideButton {

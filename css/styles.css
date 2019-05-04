@@ -1,7 +1,11 @@
 :root {
     --main-bg-color: darkgrey;
     --map-bg-color: grey;
+    --title-color: #222222;
     --button-color: grey;
+    --link-color: #222222;
+    --link-hover: #5C5C5C;
+    --info-bg-color: lightgrey;
     --button-active-color: #3C3C3C;
     --sidebar-padding: 30px;
     --sidebar-hideButton-width: 60px;

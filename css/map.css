@@ -2,7 +2,7 @@
     display: none;
 }
 
-#popup-content {
+.popup-content {
     max-height: 250px;
     overflow: scroll;
 }
