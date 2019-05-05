@@ -21,10 +21,9 @@ function getPosition(position) {
 
 function currentAddress(address) {
   fetch('https://nominatim.openstreetmap.org/search?q=' + address.value +
-      '&format=json&polygon=1&addressdetails=1').then(function(response) {
+      '&format=json&addressdetails=1').then(function(response) {
     return response.json();
   }).then(function(queryJson) {
-    console.log(queryJson[0]);
     loc = [queryJson[0].lat, queryJson[0].lon];
     locMarker.setLatLng(loc);
   }).catch(function(error) {
@@ -35,9 +34,8 @@ function currentAddress(address) {
 let route;
 
 function currentDestination(address) {
-  console.log('currentDestination() with value ' + address.value);
   fetch('https://nominatim.openstreetmap.org/search?q=' + address.value +
-      '&format=json&polygon=1&addressdetails=1').then(function(response) {
+      '&format=json&addressdetails=1').then(function(response) {
     return response.json();
   }).then(function(queryJson) {
     dest = [queryJson[0].lat, queryJson[0].lon];
@@ -88,7 +86,6 @@ searchButton.addEventListener('click', function() {
   } else {
     mymap.removeLayer(destMarker);
     if (route !== undefined) route.setWaypoints([]);
-    console.log('search()');
     search([loc]);
   }
   // mikäli määränpään syöte on tyhjä, poistetaan markeri ja reitti kartalta

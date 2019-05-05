@@ -45,32 +45,28 @@ let loc = [60.171, 24.9415],  // Alkusijainti (rautatieasema)
 locMarker.bindPopup('hmm Terve kaikille jotka tätä channelii kuuntelee! =p');
 
 function search(coords) {
-  console.log('search() with ' + coords);
   let type = document.querySelector('input[name="types"]:checked').id,
-      searchArray = createSearchArray(coords);
-  
-  if (previousQueries[type] === searchArray.toString()) {
-    // Reitti ei ole muuttunut edellisen haun jälkeen, lisätään vain merkit
-    console.log('No request');
+      searchArray = createSearchArray(coords),
+      radius = slider.value;
+
+  if (previousQueries[type] === searchArray.toString() + radius) {
+    // Reitti ei ole muuttunut edellisen haun jälkeen, lisätään vain merkit ja hakualueet
+    searchCircles.clearLayers();
+    for (let i = 0; i < searchArray.length; i++) {
+      drawSearchCircle(type, searchArray[i], radius);
+    }
     getTags();
     addPlaceMarkers();
   } else {
-    previousQueries[type] = searchArray.toString();
+    previousQueries[type] = searchArray.toString() + radius;
     previousResults[type] = {};
     tags[type] = {};
     searchCircles.clearLayers();
-    
-    console.log('Requesting ' + type);
-    console.log(searchArray);
+
     for (let i = 0; i < searchArray.length; i++) {
       let latlon = searchArray[i];
       // Lisätään hakualue kartalle
-      L.circle(latlon, {
-        color: typeColors[type],
-        fillOpacity: .1,
-        radius: slider.value,
-      }).addTo(searchCircles);
-      
+      drawSearchCircle(type, latlon, radius);
       // Tehdään haku API:sta
       apiRequest(latlon);
     }
@@ -92,8 +88,16 @@ function createSearchArray(coords) {
       prev = L.latLng(coords[i]); // Edellinen lisätty piste
     }
   }
-  if (coords.length > 1) searchArray.push(dest);  // Lisätään asetettu määränpää taulukon loppuun
   return searchArray;
+}
+
+function drawSearchCircle(type, latlon, radius) {
+  L.circle(latlon, {
+    color: typeColors[type],
+    opacity: 0,
+    fillOpacity: .18,
+    radius: radius,
+  }).addTo(searchCircles);
 }
 
 function apiRequest(latlon) {
@@ -122,8 +126,8 @@ function apiRequest(latlon) {
     }
     getTags();
     addPlaceMarkers();
-  }).catch(function(virhe) {
-    console.log(virhe);
+  }).catch(function(error) {
+    console.log(error);
   });
 }
 
