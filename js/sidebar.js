@@ -15,8 +15,9 @@ function getCurrentLocation() {
 }
 
 function getPosition(position) {
-  inputLocation.value = position.coords.latitude + ', ' +
-      position.coords.longitude;
+  loc = [position.coords.latitude, position.coords.longitude];
+  inputLocation.value = loc.toString().replace(',', ' ,');
+  locMarker.setLatLng(loc);
 }
 
 function currentAddress(address) {
