@@ -26,6 +26,7 @@ function currentAddress(address) {
   }).then(function(queryJson) {
     loc = [queryJson[0].lat, queryJson[0].lon];
     locMarker.setLatLng(loc);
+    if (inputDestination.value === '') search([loc]);
   }).catch(function(error) {
     console.log(error);
   });
@@ -78,6 +79,9 @@ searchButton.addEventListener('click', function() {
   tagPlaceholder = [];
 
   // Syötteiden tarkistus
+  if (inputLocation.value === '' && inputDestination.value === '') {
+    search([loc]);
+  }
   if (inputLocation.value !== '') {
     currentAddress(inputLocation);
   }
@@ -86,7 +90,6 @@ searchButton.addEventListener('click', function() {
   } else {
     mymap.removeLayer(destMarker);
     if (route !== undefined) route.setWaypoints([]);
-    search([loc]);
   }
   // mikäli määränpään syöte on tyhjä, poistetaan markeri ja reitti kartalta
 });
