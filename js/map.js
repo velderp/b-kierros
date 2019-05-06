@@ -45,6 +45,7 @@ let loc = [60.171, 24.9415],  // Alkusijainti (rautatieasema)
 locMarker.bindPopup('hmm Terve kaikille jotka tätä channelii kuuntelee! =p');
 
 function search(coords) {
+  console.log(coords);
   let type = document.querySelector('input[name="types"]:checked').id,
       searchArray = createSearchArray(coords),
       radius = slider.value;

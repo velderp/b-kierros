@@ -16,6 +16,24 @@ body {
     height: 100vh;
     margin: 0;
     font-family: 'Source Code Pro', monospace;
+    background-color: var(--map-bg-color);
+}
+
+h1 h2 h3 {
+    margin: 0 0 2% 0;
+    color: var(--title-color);
+}
+
+p {
+    margin: 0;
+}
+
+a {
+    color: var(--link-color);
+}
+
+a:hover {
+    color: var(--link-hover)
 }
 
 #content-wrapper {
@@ -61,5 +79,24 @@ body {
     background-color: var(--map-bg-color);
     display: block;
     z-index: 0;
+}
+
+.media-content {
+    width: 65%;
+    margin: 0 auto 40px auto;
+}
+
+.iframe-wrapper {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%;
+}
+
+.iframe-wrapper iframe {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0; top: 0;
 }
 
